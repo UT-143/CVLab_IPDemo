@@ -1,5 +1,6 @@
 import cv2
 import caputure as cap
+import effect as ef
 import openpifpaf
 
 # cpuで処理してます
@@ -8,7 +9,7 @@ predictor = openpifpaf.Predictor(checkpoint='shufflenetv2k16')
 
 
 cam = cv2.VideoCapture(0)
-cam.set(cv2.CAP_PROP_FPS, 10)
+#cam.set(cv2.CAP_PROP_FPS, 10)
 cv2.namedWindow("press space to take a photo", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("press space to take a photo", 500, 300)
 
@@ -34,8 +35,10 @@ while True:
         for d in data:
             if d[0][0] and d[1][0]: # 鼻と左目
                 cv2.line(frame, (d[0][1], d[0][2]), (d[1][1], d[1][2]), (255, 0, 0), thickness=2)
+                ef.effect(frame, d)
             if d[0][0] and d[2][0]: # 鼻と右目
                 cv2.line(frame, (d[0][1], d[0][2]), (d[2][1], d[2][2]), (255, 0, 0), thickness=2)
+                ef.effect(frame, d)
     
     cv2.imshow("press space to take a photo", frame)
 
