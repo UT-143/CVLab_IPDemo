@@ -37,6 +37,8 @@ while True:
     cv2.imshow("press space to take a photo", frame)
 
     k = cv2.waitKey(1)
+    if k == ord('q'):
+        frame = me.switchFlag()
     if k%256 == 27:
         # ESC pressed
         print("Escape hit, closing...")
