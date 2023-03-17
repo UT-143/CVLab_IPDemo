@@ -9,6 +9,10 @@ def effect(frame, data, imgPath, centerPoint, size, startLine, endLine):
     lineX = data[startLine][1] - data[endLine][1]
     lineY = data[startLine][2] - data[endLine][2]
     f = math.sqrt(pow(lineX, 2) + pow(lineY, 2)) * size / w
+    if f == 0:
+        return
+    if f < 0.5:
+        f = 0.5
     alpha_frame = cv2.resize(alpha_frame, dsize=None, fx=f , fy=f)
     h = alpha_frame.shape[0]
     w = alpha_frame.shape[1]

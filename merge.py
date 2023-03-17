@@ -1,5 +1,7 @@
 import cv2
 import openpifpaf
+import datetime
+import math
 import caputure
 import effect
 
@@ -11,6 +13,8 @@ class merge():
         # 画像名, 中心番地, サイズ, 必要検出, 基準ライン
         self.effects = [[["null", 0, 0, [], []] for i in range(3)] for i in range(10)]
         self.flag = False
+        self.shot = False
+        self.countFlag = False
         pass
 
     def drow(self, frame, detectionFrame):
@@ -18,35 +22,11 @@ class merge():
         if len(data) != 0: # 人が写っている時
             at = 0
             for d in data:
+                if at == 10:
+                    break
                 if self.flag:
                     self.drowPoint(frame, d)
-                if d[1][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[2][0]:
-                    if d[1][2] > d[9][2] and d[1][2] > d[10][2] and d[5][1]-d[2][1]+d[1][1] > d[9][1] and d[6][1]+d[2][1]-d[1][1] < d[10][1]:
-                        self.clearEffects(at)
-                        self.effects[at][0] = ["rabit_ear", 0, 6, [0, 1, 2], [1, 2]]
-                        self.effects[at][1] = ["13", 9, 1, [7, 9], [7, 9]]
-                        self.effects[at][2] = ["12", 10, 1, [8, 10], [8, 10]]
-                if d[1][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[2][0]:
-                    if d[1][2] < d[9][2] and d[1][2] < d[10][2] and d[5][1]-d[2][1]+d[1][1] > d[9][1] and d[6][1]+d[2][1]-d[1][1] < d[10][1]:
-                        self.clearEffects(at)
-                        self.effects[at][0] = ["cat_ear", 0, 5, [0, 1, 2], [1, 2]]
-                        self.effects[at][1] = ["cat_tail", 11, 3, [11, 12], [11, 12]]
-                if d[1][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[2][0]:
-                    if d[1][2] < d[9][2] and d[5][2] > d[9][2] and d[2][2] < d[10][2] and d[6][2] > d[10][2] and d[5][1]-d[2][1]+d[1][1] < d[9][1] and d[9][1] < d[5][1]-(3*d[2][1])+(3*d[1][1]) and d[6][1]+d[2][1]-d[1][1] > d[10][1] and d[6][1]+(3*d[2][1])-(3*d[1][1]) < d[10][1]:
-                        self.clearEffects(at)
-                        # self.effects[at][0] = ["gogogo", 5, 5, [5, 6], [5, 6]]
-                        self.effects[at][0] = ["tenshi_ring", 0, 5, [0, 1, 2], [1, 2]]
-                        self.effects[at][1] = ["tenshi_hane_R", 6, 3, [5, 6], [5, 6]]
-                        self.effects[at][2] = ["tenshi_hane_L", 5, 3, [5, 6], [5, 6]]
-                if d[1][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[2][0]:
-                    if d[1][2] > d[9][2] and d[2][2] > d[10][2]and d[5][1]-d[2][1]+d[1][1] < d[9][1] and d[9][1] < d[5][1]-(3*d[2][1])+(3*d[1][1]) and d[6][1]+d[2][1]-d[1][1] > d[10][1] and d[6][1]+(3*d[2][1])-(3*d[1][1]) < d[10][1]:
-                        self.clearEffects(at)
-                        self.effects[at][0] = ["don", 0, 5, [0, 5, 6], [5, 6]]
-
-                if d[9][0] and d[10][0]: # 左右手首検出できたら
-                    if  d[9][1] < d[10][1]: # 重ならないクロスだったら
-                        cv2.line(frame, (d[9][1], d[9][2]), (d[10][1], d[10][2]), (0, 255, 0), thickness=5)
-                        self.clearEffects(at)
+                self.selectEffects(d, at)
                 for effectData in self.effects[at]:
                     if effectData[0] != "null":
                         flag = False
@@ -57,14 +37,56 @@ class merge():
                                 flag = False
                                 break
                         if flag:
-                            effect.effect(frame, d, effectData[0] + ".png", effectData[1], effectData[2], effectData[4][0], effectData[4][1])
+                            effect.effect(frame, d, "./effect/" + effectData[0] + ".png", effectData[1], effectData[2], effectData[4][0], effectData[4][1])
                 at += 1
-                
+        
         return frame
+    
+    def selectEffects(self, d, at):
+        #案１の検出
+        # if d[5][0] and d[6][0] and d[7][0] and d[8][0] and d[9][0] and d[10][0] and d[15][0] and d[16][0]:
+        #     if d[9][2] < d[7][2] and d[10][2] < d[8][2] and d[5][2] < d[9][2] and d[6][2] < d[10][2] and d[15][1]-d[16][1] > 50:
+        #         self.clearEffects(at)
+        #         self.effects[at][0] = ["1", 0, 5, [0, 1, 2], [1, 2]]
+        #案2の検出
+        if d[1][0] and d[2][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[11][0] and d[12][0]:
+            if d[10][1] > d[9][1] and d[5][1]-d[2][1]+d[1][1] > d[9][1] and d[6][1]+d[2][1]-d[1][1] < d[10][1] and d[5][2] < d[9][2] and d[6][2] < d[10][2] and d[11][2] > d[9][2] and d[12][2] > d[10][2]:
+                self.clearEffects(at)
+                self.effects[at][0] = ["don", 0, 5, [0, 5, 6], [5, 6]]
+        # #案3の検出
+        if d[1][0] and d[2][0] and d[9][0] and d[10][0]:
+            radius_R = math.sqrt(pow(d[9][1] - d[0][1], 2) + pow(d[9][2] - d[0][2], 2))
+            radius_L = math.sqrt(pow(d[10][1] - d[0][1], 2) + pow(d[10][2] - d[0][2], 2))
+            if radius_R < 5 * abs(d[1][1] - d[2][1]) and radius_L < 5 * abs(d[1][1] - d[2][1]) and d[9][2] > d[10][2]:
+                self.clearEffects(at)
+                self.effects[at][0] = ["cat_ear", 0, 6, [0, 1, 2], [1, 2]]
+                self.effects[at][1] = ["cat_tail", 11, 2.5, [11, 12], [11, 12]]
+        # #案4の検出
+        if d[1][0] and d[5][0] and d[6][0] and d[9][0] and d[10][0] and d[13][0] and d[14][0]:
+            far_hand = abs(d[9][1] - d[10][1])
+            far_sholder = abs(d[5][1] - d[6][1])
+            far_knees = abs(d[13][1] - d[14][1])
+            if far_hand > far_sholder * 2 and far_knees > far_sholder * 1.5 and d[9][2] < d[1][2]:
+                self.clearEffects(at)
+                self.effects[at][1] = ["grab_L", 9, 1.5, [7, 9], [7, 9]]
+                self.effects[at][2] = ["grab_R", 10, 1.5, [8, 10], [8, 10]]
+        #案5の検出
+        if d[1][0] and d[2][0] and d[9][0] and d[10][0] and d[11][0] and d[12][0]:
+            radius_R = math.sqrt(pow(d[9][1] - d[11][1], 2) + pow(d[9][2] - d[11][2], 2))
+            radius_L = math.sqrt(pow(d[10][1] - d[12][1], 2) + pow(d[10][2] - d[12][2], 2))
+            if radius_R < 3 * abs(d[1][1] - d[2][1]) and radius_L < 3 * abs(d[1][1] - d[2][1]):
+                self.clearEffects(at)
+                self.effects[at][0] = ["kirakira", 0, 5, [0, 5, 6], [5, 6]]
+                self.effects[at][1] = ["kirakira", 0, 8, [0, 1, 2], [1, 2]]
+        # エフェクトのクリア
+        if d[5][0] and d[6][0] and d[9][0] and d[10][0]:
+            if  abs(d[9][2] - d[10][2]) < 50 and abs(d[9][1] - d[10][1] > 3.5 * abs(d[5][1] - d[6][1])) and d[9][2] > d[5][2]:
+                # cv2.line(frame, (d[9][1], d[9][2]), (d[10][1], d[10][2]), (0, 255, 0), thickness=5)
+                self.clearEffects(at)
 
     def clearEffects(self, at):
         for i in range(3):
-            self.effects[at][i] = ["null", 0, 5, [], []]
+            self.effects[at][i] = ["null", 0, 0, [0], [0, 0]]
 
     def switchFlag(self):
         if self.flag:
@@ -108,5 +130,15 @@ class merge():
             cv2.drawMarker(frame, (d[15][1], d[15][2]), (0, 0, 255), markerSize=30)
         if d[16][0]: # 
             cv2.drawMarker(frame, (d[16][1], d[16][2]), (0, 0, 255), markerSize=30)
-        
 
+    def printImg(self, frame):
+        dt_now = datetime.datetime.now()
+        src = str(dt_now.day) + "_" +  str(dt_now.hour) + "_" +  str(dt_now.minute) + "_" + str(dt_now.second)
+        cv2.imwrite('./img/' + src + '.jpg', frame)
+        print('./img/' + src + '.jpg')
+        return
+    
+    def switchShotOn(self):
+        if not self.shot and not self.countFlag:
+            print("shot on")
+            self.shot = True
