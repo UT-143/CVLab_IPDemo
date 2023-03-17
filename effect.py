@@ -1,18 +1,26 @@
 import cv2
 import math
+import numpy as np
 
-def effect(frame, data, imgPath):
+def effect(frame, data, imgPath, centerPoint, size, startLine, endLine):
     main_frame = frame
     alpha_frame = cv2.imread(imgPath, cv2.IMREAD_UNCHANGED)  # アルファチャンネル込みで読み込む
     w = alpha_frame.shape[1]
-    f = (data[1][1] - data[2][1])*5 / w
+    lineX = data[startLine][1] - data[endLine][1]
+    lineY = data[startLine][2] - data[endLine][2]
+    f = math.sqrt(pow(lineX, 2) + pow(lineY, 2)) * size / w
+    if f == 0:
+        return
+    if f < 0.5:
+        f = 0.5
     alpha_frame = cv2.resize(alpha_frame, dsize=None, fx=f , fy=f)
     h = alpha_frame.shape[0]
     w = alpha_frame.shape[1]
-    position = (data[0][1] - int(w/2), data[0][2]-int(h/2))
+    position = (data[centerPoint][1] - int(w/2), data[centerPoint][2]-int(h/2))
     # position = (data[0][1] - int(w/2), data[0][2]-h+data[2][1]-data[1][1])
 
-    angle = math.degrees(math.atan((data[2][2] - data[1][2]) / abs(data[2][1] - data[1][1])))
+    lineX = np.where(lineX == 0, 1, lineX)
+    angle = math.degrees(math.atan2(-1 * lineY, lineX))
     trans = cv2.getRotationMatrix2D(center=(int(w/2), int(h/2)), angle=angle , scale=1.0)
     alpha_frame = cv2.warpAffine(src=alpha_frame, M=trans, dsize=(w,h))
 
