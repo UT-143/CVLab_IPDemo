@@ -1,8 +1,8 @@
 import cv2
 import math
 import numpy as np
-
-def effect(frame, data, imgPath, centerPoint, size, startLine, endLine):
+# エフェクトの付与を行うクラス
+def effect(frame, data, imgPath, centerPoint, size, startLine, endLine, rotable):
     main_frame = frame
     alpha_frame = cv2.imread(imgPath, cv2.IMREAD_UNCHANGED)  # アルファチャンネル込みで読み込む
     w = alpha_frame.shape[1]
@@ -21,6 +21,8 @@ def effect(frame, data, imgPath, centerPoint, size, startLine, endLine):
 
     lineX = np.where(lineX == 0, 1, lineX)
     angle = math.degrees(math.atan2(-1 * lineY, lineX))
+    if rotable:
+        angle = 0
     trans = cv2.getRotationMatrix2D(center=(int(w/2), int(h/2)), angle=angle , scale=1.0)
     alpha_frame = cv2.warpAffine(src=alpha_frame, M=trans, dsize=(w,h))
 

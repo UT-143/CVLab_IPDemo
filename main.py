@@ -19,10 +19,6 @@ while True:
     if not ret:
         print("failed to grab frame")
         break
-
-    # パフォーマンスを向上させるために、画像を書き込みを不可にして参照渡しとします。
-    # frame.flags.writeable = False
-
     # pifpafで処理する画素値を下げている ※取得座標を変化させないといけない
     frame2 = cv2.resize(frame, dsize=None, fx=1/f , fy=1/f)
     frame2.flags.writeable = False
@@ -34,12 +30,13 @@ while True:
     frame.flags.writeable = True
 
     frame = cv2.flip(frame, 1)
-
+    # スクリーンショットの処理を開始
     if me.shot:
         t = time.time()
         print("count on")
         me.countFlag = True
         me.shot = False
+    # スクリーンショットカウントが開始
     if me.countFlag:
         c = time.time()
         if c - t >= 3:
@@ -63,10 +60,13 @@ while True:
 
 
     k = cv2.waitKey(1)
+    # マーカーを表示
     if k == ord('q'):
         frame = me.switchFlag()
+    # スクショカウントオン
     if k == ord('s'):
         me.switchShotOn()
+    # 終了
     if k%256 == 27:
         # ESC pressed
         print("Escape hit, closing...")

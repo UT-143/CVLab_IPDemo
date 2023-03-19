@@ -1,4 +1,4 @@
-
+# pifpafで座標を取得し返すクラス
 class caputure():
     def __init__(self, predictor, f):
         self.predictor = predictor
