@@ -5,7 +5,7 @@ import merge
 
 # cpuで処理してます
 
-f = float(6)
+f = float(5)
 me = merge.merge(f)
 t = None
 cam = cv2.VideoCapture(0)
@@ -40,7 +40,6 @@ while True:
     if me.countFlag:
         c = time.time()
         if c - t >= 3:
-            print('hoge')
             me.printImg(frame)
             me.countFlag = False
         else:
