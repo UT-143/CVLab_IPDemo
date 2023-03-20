@@ -40,7 +40,10 @@ class merge():
                                 flag = False
                                 break
                         if flag:
-                            effect.effect(frame, d, "./effect/" + effectData[0] + ".png", effectData[1], effectData[2], effectData[4][0], effectData[4][1], effectData[5])
+                            try:
+                                effect.effect(frame, d, "./effect/" + effectData[0] + ".png", effectData[1], effectData[2], effectData[4][0], effectData[4][1], effectData[5])
+                            except:
+                                print()
                 at += 1
         
         return frame
@@ -104,41 +107,9 @@ class merge():
 
     # マーカーを取得座標に描画するクラス
     def drowPoint(self, frame, d):
-        if d[0][0]: # 鼻
-            cv2.drawMarker(frame, (d[0][1], d[0][2]), (0, 0, 255), markerSize=30)
-        if d[1][0]: # 左目
-            cv2.drawMarker(frame, (d[1][1], d[1][2]), (0, 0, 255), markerSize=30)
-        if d[2][0]: # 右目
-            cv2.drawMarker(frame, (d[2][1], d[2][2]), (0, 0, 255), markerSize=30)
-        if d[3][0]: # 左耳
-            cv2.drawMarker(frame, (d[3][1], d[3][2]), (0, 0, 255), markerSize=30)
-        if d[4][0]: # 右耳
-            cv2.drawMarker(frame, (d[4][1], d[4][2]), (0, 0, 255), markerSize=30)
-        if d[5][0]: # 左肩
-            cv2.drawMarker(frame, (d[5][1], d[5][2]), (0, 0, 255), markerSize=30)
-        if d[6][0]: # 右肩
-            cv2.drawMarker(frame, (d[6][1], d[6][2]), (0, 0, 255), markerSize=30)
-        if d[7][0]: # 左肘
-            cv2.drawMarker(frame, (d[7][1], d[7][2]), (0, 0, 255), markerSize=30)
-        if d[8][0]: # 右肘
-            cv2.drawMarker(frame, (d[8][1], d[8][2]), (0, 0, 255), markerSize=30)
-        if d[9][0]: # 左手首
-            cv2.drawMarker(frame, (d[9][1], d[9][2]), (0, 0, 255), markerSize=30)
-        if d[10][0]: # 右手首
-            cv2.drawMarker(frame, (d[10][1], d[10][2]), (0, 0, 255), markerSize=30)
-        if d[11][0]: # 左股関節
-            cv2.drawMarker(frame, (d[11][1], d[11][2]), (0, 0, 255), markerSize=30)
-        if d[12][0]: # 右股関節
-            cv2.drawMarker(frame, (d[12][1], d[12][2]), (0, 0, 255), markerSize=30)
-        if d[13][0]: # 左膝
-            cv2.drawMarker(frame, (d[13][1], d[13][2]), (0, 0, 255), markerSize=30)
-        if d[14][0]: # 右膝
-            cv2.drawMarker(frame, (d[14][1], d[14][2]), (0, 0, 255), markerSize=30)
-        if d[15][0]: # 
-            cv2.drawMarker(frame, (d[15][1], d[15][2]), (0, 0, 255), markerSize=30)
-        if d[16][0]: # 
-            cv2.drawMarker(frame, (d[16][1], d[16][2]), (0, 0, 255), markerSize=30)
-
+        for i in range(17):
+            if d[i][0]:
+                cv2.drawMarker(frame, (d[i][1], d[i][2]), (0, 0, 255), markerSize=30)
     # 画像を出力するクラス
     def printImg(self, frame):
         dt_now = datetime.datetime.now()
