@@ -11,7 +11,7 @@ t = None
 cam = cv2.VideoCapture(0)
 cam.set(cv2.CAP_PROP_FPS, 10)
 cv2.namedWindow("capture a photo", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("capture a photo", 500, 300)
+cv2.resizeWindow("capture a photo", 1920, 1080)
 
 
 while True:
@@ -54,7 +54,7 @@ while True:
                 lineType=cv2.LINE_4)
 
 
-    cv2.imshow("show", frame)
+    cv2.imshow("capture a photo", frame)
 
 
 
